@@ -37,6 +37,21 @@
 	}\
 } while(0)
 
+#define TouchKey(Act,PCKey) do {\
+	if(!PCKey.useJoypad) {\
+		if(Act==1) simulateKeyNewpress(PCKey.virtualKey);\
+		if(Act==0) simulateKeyRelease(PCKey.virtualKey);\
+	}\
+	else if(PCKey.useJoypad == 1) {\
+		if(Act==1) joyButtons |= PCKey.joypadButton;\
+		else joyButtons &= ~PCKey.joypadButton;\
+	}\
+	else if(PCKey.useJoypad == 2) {\
+		if(Act==1) joyButtons |= PCKey.joypadButton << 8;\
+		else joyButtons &= ~(PCKey.joypadButton << 8);\
+	}\
+} while(0)
+
 #define BIT(n) (1 << (n))
 
 typedef enum {
@@ -72,7 +87,7 @@ typedef enum {
 } KEYPAD_BITS;
 
 struct keyMapping {
-	unsigned char useJoypad; // 0 keyboard key, 1 joypad1-8, 2 joypad9-16
+	unsigned char useJoypad; // 0 keyboard key, 1 joypad1-8, 2 joypad9-16, 3 hat
 	union {
 		unsigned char virtualKey;
 		unsigned char joypadButton;
@@ -97,11 +112,13 @@ struct touch {
 extern unsigned int lastKeys;
 extern unsigned int currentKeys;
 
+extern unsigned int volume;
+
 extern struct circlePad circlePad;
 extern struct cStick cStick;
 extern struct touch lastTouch;
 extern struct touch currentTouch;
 
-inline unsigned int mapVirtualKey(unsigned int key);
+unsigned int mapVirtualKey(unsigned int key);
 void simulateKeyNewpress(unsigned int key);
 void simulateKeyRelease(unsigned int key);

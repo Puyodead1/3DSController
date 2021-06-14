@@ -8,6 +8,14 @@ enum analogue {
 	mouse,
 	joystick1,
 	joystick2,
+	keys,
+	dualjoy,
+};
+
+enum dPad {
+	key,
+	pov,
+	cPov,
 };
 
 struct settings {
@@ -16,8 +24,10 @@ struct settings {
 	enum analogue circlePad;
 	enum analogue cStick;
 	enum analogue touch;
+	enum dPad dPad;
 	int mouseSpeed;
-	struct keyMapping A, B, X, Y, L, R, ZL, ZR, Left, Right, Up, Down, Start, Select, Tap;
+	UINT vJoyDevice;
+	struct keyMapping A, B, X, Y, L, R, ZL, ZR, Start, Select, Tap, Left, Right, Up, Down, PadLeft, PadRight, PadUp, PadDown, CSLeft, CSRight, CSUp, CSDown, touchLeft, touchRight;
 };
 
 extern struct settings settings;

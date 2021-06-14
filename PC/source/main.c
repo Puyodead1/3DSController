@@ -1,6 +1,6 @@
 // 3DS Controller Server
 
-#define VERSION 0.6
+#define VERSION "0.7.2"
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -14,7 +14,7 @@
 #include "keyboard.h"
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmd, int nShow) {
-	printf("3DS Controller Server %.1f\n", VERSION);
+	printf("3DS Controller Server %s\n", VERSION);
 	
 	DWORD screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	DWORD screenHeight = GetSystemMetrics(SM_CYSCREEN);
@@ -22,8 +22,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmd, int nShow)
 	double widthMultiplier = screenWidth / 320.0;
 	double heightMultiplier = screenHeight / 240.0;
 	
+	if(!readSettings()) {
+		printf("Couldn't read settings file, using default key bindings.\n");
+	}
+	
 	bool vJoy = true;
-	UINT iInterface = 1;
+	UINT iInterface = settings.vJoyDevice;
 	
 	iReport.wAxisX = JOY_MIDDLE;
 	iReport.wAxisY = JOY_MIDDLE;
@@ -50,19 +54,17 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmd, int nShow)
 	ContPovNumber = GetVJDContPovNumber(iInterface);
 	//int DiscPovNumber = GetVJDDiscPovNumber(iInterface);
 	
-	if(vJoy && !updateJoystick()) {
-		printf("vJoy failed (3)! Buttons will still work, but joystick won't work.\n");
-		vJoy = false;
-	}
+	if((settings.dPad == pov) && !(ContPovNumber == 0)) settings.dPad = cPov;
 	
-	if(!readSettings()) {
-		printf("Couldn't read settings file, using default key bindings.\n");
-	}
+	if(vJoy && !updateJoystick(iInterface)) {
+		printf("vJoy failed (3)! Buttons will still work, but joystick won't work.\nIs vJoy device %d configured?\n",iInterface);
+		vJoy = false;
+	} else printf("Connected to vJoy device %d\n",iInterface);
 	
 	initNetwork();
 	
 	char nButtons = GetVJDButtonNumber(iInterface);
-	if(nButtons <16) printf("Your vJoy has less than 16 buttons (8 by default), some may not work!\n");
+	if(vJoy && nButtons <16) printf("Your vJoy has %d buttons, 3DSController supports 16!\n", nButtons);
 	
 	printf("Port: %d\n", settings.port);
 	
@@ -120,21 +122,39 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmd, int nShow)
 				memcpy(&circlePad, &buffer.circlePad, 4);
 				memcpy(&currentTouch, &buffer.touch, 4);
 				memcpy(&cStick, &buffer.cStick, 4);
+				memcpy(&volume, &buffer.volume, 4);
+				//printf("\rVolume is currently: %x ", volume); //test
 				
 				handleKey(KEY_A, settings.A);
 				handleKey(KEY_B, settings.B);
 				handleKey(KEY_SELECT, settings.Select);
 				handleKey(KEY_START, settings.Start);
-				handleKey(KEY_DRIGHT, settings.Right);
-				handleKey(KEY_DLEFT, settings.Left);
-				handleKey(KEY_DUP, settings.Up);
-				handleKey(KEY_DDOWN, settings.Down);
+				if(settings.dPad == key) { //Handle normally if not using POV in settings.
+					handleKey(KEY_DRIGHT, settings.Right);
+					handleKey(KEY_DLEFT, settings.Left);
+					handleKey(KEY_DUP, settings.Up);
+					handleKey(KEY_DDOWN, settings.Down);
+				}
 				handleKey(KEY_R, settings.R);
 				handleKey(KEY_L, settings.L);
 				handleKey(KEY_ZR, settings.ZR);
 				handleKey(KEY_ZL, settings.ZL);
 				handleKey(KEY_X, settings.X);
 				handleKey(KEY_Y, settings.Y);
+				
+				if(settings.circlePad == keys) {
+					handleKey(KEY_CPAD_RIGHT, settings.PadRight);
+					handleKey(KEY_CPAD_LEFT, settings.PadLeft);
+					handleKey(KEY_CPAD_UP, settings.PadUp);
+					handleKey(KEY_CPAD_DOWN, settings.PadDown);
+				}
+				
+				if(settings.cStick == keys) {
+					handleKey(KEY_CSTICK_RIGHT, settings.CSRight);
+					handleKey(KEY_CSTICK_LEFT, settings.CSLeft);
+					handleKey(KEY_CSTICK_UP, settings.CSUp);
+					handleKey(KEY_CSTICK_DOWN, settings.CSDown);
+				}
 				
 				//handleKey(KEY_LID, 'I');
 				
@@ -163,17 +183,40 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmd, int nShow)
 							SetCursorPos((int)((double)currentTouch.x * widthMultiplier), (int)((double)currentTouch.y * heightMultiplier));
 						}
 					}
-					else if(settings.touch == joystick1) {
-						joyX = (currentTouch.x) * 128;
-						joyY = (currentTouch.y) * 128;
+					else if(settings.touch == joystick1) { //made a little bit more accurate to the screen size.
+						joyX = (int)((float)(currentTouch.x) * 102.3f);
+						joyY = (int)((float)(currentTouch.y) * 136.5f);
 					}
 					
 					else if(settings.touch == joystick2) {
-						joyRX = (currentTouch.x) * 128;
-						joyRY = (currentTouch.y) * 128;
+						joyRX = (int)((float)(currentTouch.x) * 102.3f);
+						joyRY = (int)((float)(currentTouch.y) * 136.5f);
+					}
+					else if(settings.touch == dualjoy){
+						/*if(currentTouch.x <= 200) printf("1 "); else printf("1n ");
+						if(currentTouch.x >= 120) printf("2 "); else printf("2n ");*/
+						if(currentTouch.x <= 200) TouchKey(1,settings.touchLeft); else TouchKey(0,settings.touchLeft);
+						if(currentTouch.x >= 120) TouchKey(1,settings.touchRight); else TouchKey(0,settings.touchRight);//great
 					}
 					else {
 						handleKey(KEY_TOUCH, settings.Tap);
+					}
+
+						
+				}else { //If we are not touching, move to center (Like if you release the joystick on a normal controller).
+					if(settings.touch == joystick1) {
+						joyX = 16383; //Halfway between the x
+						joyY = 16383; //Halfway between the y
+					}
+					
+					else if(settings.touch == joystick2) {
+						joyRX = 16383; //Halfway between the rx
+						joyRY = 16383; //Halfway between the ry
+					}
+
+					else if(settings.touch == dualjoy) {
+					TouchKey(0,settings.touchLeft);
+						TouchKey(0,settings.touchRight);
 					}
 				}
 				
@@ -214,10 +257,55 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmd, int nShow)
 					joyRY = (128 - cStick.y) * 128;
 				}
 				
+				
+				if(settings.dPad == cPov) {
+					if((currentKeys & KEY_DUP) && !(currentKeys & KEY_DLEFT)) {
+						if((currentKeys & KEY_DRIGHT)) {
+							povHat = 4500;
+						} else {
+							povHat = 0;
+						}
+					} else if((currentKeys & KEY_DRIGHT)) {
+						if((currentKeys & KEY_DDOWN)) {
+							povHat = 13500;
+						} else {
+							povHat = 9000;
+						}
+					} else if((currentKeys & KEY_DDOWN)) {
+						if((currentKeys & KEY_DLEFT)) {
+							povHat = 22500;
+						} else {
+							povHat = 18000;
+						}
+					} else if((currentKeys & KEY_DLEFT)) {
+						if ((currentKeys & KEY_DUP)) {
+							povHat = 31500;
+						} else {
+							povHat = 27000;
+						}
+					}
+					
+					if(!((currentKeys & KEY_DUP) || (currentKeys & KEY_DRIGHT) || (currentKeys & KEY_DDOWN) || (currentKeys & KEY_DLEFT))) {
+						//If none are pressed, reset the POV hat
+						povHat = -1;
+					}
+					
+				}
+				
+				else if(settings.dPad == pov) {
+					if((currentKeys & KEY_DUP) && !(currentKeys & KEY_DLEFT)) iReport.bHats = 0;
+					else if(currentKeys & KEY_DRIGHT) iReport.bHats = 1;
+					else if (currentKeys & KEY_DDOWN) iReport.bHats = 2;
+					else if (currentKeys & KEY_DLEFT) iReport.bHats = 3;
+					else iReport.bHats = -1;
+				}
+				
+				joyVolume = volume * 512;
+				
 				break;
 		}
 		
-		if(vJoy) updateJoystick();
+		if(vJoy) updateJoystick(iInterface);
 	}
 	
 	error("accept()");

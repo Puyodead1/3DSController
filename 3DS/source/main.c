@@ -19,7 +19,7 @@ void hang(char *message) {
 		
 		clearScreen();
 		drawString(10, 10, "%s", message);
-		drawString(10, 20, "Press Start and Select to exit.");
+		drawString(10, 20, "Start and Select to exit");
 		
 		u32 kHeld = hidKeysHeld();
 		if((kHeld & KEY_START) && (kHeld & KEY_SELECT)) longjmp(exitJmp, 1);
@@ -34,45 +34,31 @@ int main(void) {
 	acInit();
 	gfxInitDefault();
 	
-	gfxSetDoubleBuffering(GFX_TOP, false);
-	gfxSetDoubleBuffering(GFX_BOTTOM, false);
+	gfxSetDoubleBuffering(GFX_TOP, true);
+	gfxSetDoubleBuffering(GFX_BOTTOM, true);
 	
 	if(setjmp(exitJmp)) goto exit;
 	
 	preRenderKeyboard();
 	
 	clearScreen();
-	drawString(10, 10, "Initialising FS...");
+	drawString(10, 10, "Initing FS...");
 	gfxFlushBuffers();
 	gfxSwapBuffers();
 	
 	fsInit();
 	
 	clearScreen();
-	drawString(10, 10, "Initialising SOC...");
+	drawString(10, 10, "Initing SOC...");
 	gfxFlushBuffers();
 	gfxSwapBuffers();
 	
-	socInit((u32 *)memalign(0x1000, 0x100000), 0x100000);
+	SOC_Initialize((u32 *)memalign(0x1000, 0x100000), 0x100000);
 	
-	while(aptMainLoop()) { /* Wait for WiFi; break when WiFiStatus is truthy */
-		u32 wifiStatus = 0;
-		ACU_GetWifiStatus(&wifiStatus);
-		if(wifiStatus) break;
-		
-		hidScanInput();
-		clearScreen();
-		drawString(10, 10, "Waiting for WiFi connection...");
-		drawString(10, 20, "Ensure you are in range of an access point,");
-		drawString(10, 30, "and that wireless communications are enabled.");
-		drawString(10, 50, "You can alternatively press Start and Select to exit.");
-		
-		u32 kHeld = hidKeysHeld();
-		if((kHeld & KEY_START) && (kHeld & KEY_SELECT)) longjmp(exitJmp, 1);
-		
-		gfxFlushBuffers();
-		gspWaitForVBlank();
-		gfxSwapBuffers();
+	u32 wifiStatus = 0;
+	ACU_GetWifiStatus(&wifiStatus);
+	if(!wifiStatus) {
+		hang("No WiFi! Is your wireless slider on?");
 	}
 	
 	clearScreen();
@@ -105,8 +91,12 @@ int main(void) {
 		u32 kHeld = hidKeysHeld();
 		circlePosition circlePad;
 		circlePosition cStick;
+		u8 vol8;
+		u8* volp = &vol8; //As a test for pointing at things.
 		hidCstickRead(&cStick);
 		hidCircleRead(&circlePad);
+		HIDUSER_GetSoundVolume(volp);
+		u32 volume = (u32)vol8; //Upscale to 32 for transmission
 		touchPosition touch;
 		touchRead(&touch);
 		
@@ -117,7 +107,11 @@ int main(void) {
 				keyboardActive = !keyboardActive;
 				keyboardToggle = false;
 				
-				if(keyboardActive) enableBacklight();
+				if(keyboardActive) {
+					enableBacklight();
+				} else {
+					disableBacklight();
+				}
 			}
 		}
 		else keyboardToggle = true;
@@ -149,11 +143,14 @@ int main(void) {
 			}
 		}
 		
-		sendKeys(kHeld, circlePad, touch, cStick);
-		
+		sendKeys(kHeld, circlePad, touch, cStick, volume);
+		//drawString(10, 10, "Volume: %x", volume);
 		//receiveBuffer(sizeof(struct packet));
 		
-		if((kHeld & KEY_START) && (kHeld & KEY_SELECT)) longjmp(exitJmp, 1);
+		if((kHeld & KEY_START) && (kHeld & KEY_SELECT)) {
+			sendKeys(0, circlePad, touch, cStick, volume);
+			longjmp(exitJmp, 1);
+		}
 		
 		gfxFlushBuffers();
 		gspWaitForVBlank();
@@ -164,7 +161,7 @@ int main(void) {
 	
 	enableBacklight();
 	
-	SOCU_ShutdownSockets();
+	SOC_Shutdown();
 	
 	svcCloseHandle(fileHandle);
 	fsExit();

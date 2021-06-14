@@ -13,14 +13,17 @@
 #define joyY iReport.wAxisY
 #define joyRX iReport.wAxisXRot
 #define joyRY iReport.wAxisYRot
+//#define joyVolume iReport.wSlider
+#define joyVolume iReport.wAxisZ
+#define povHat iReport.bHats
+
 #define joyButtons iReport.lButtons
 
 #define JOY_MIDDLE (128 * 128)
 
 extern int ContPovNumber;
-extern UINT iInterface;
 //extern BOOL ContinuousPOV;
 
 extern JOYSTICK_POSITION iReport;
 
-BOOL updateJoystick(void);
+BOOL updateJoystick(int);

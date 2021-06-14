@@ -28,29 +28,14 @@ If using version 0.4 or above you can press L, R and X to bring up the keyboard.
 
 If using version 0.6 or above, up to 16 joystick buttons are available. If you wish to use more than 8, you need to configure vJoy. Search in your start menu for vJoyConfig and set buttons to 16.
 
+If using version 0.7 or above, the output vJoy device is configurable. To output to a device other than 1 it must first be enabled in vJoyConfig.
+
 If using Ninjhax press Start and Select to return to the Homebrew Loader, otherwise you can just exit with the Home button.
-
-### Setup and Usage (Linux)
--For keyboard emulation
-Follow the Windows instructions, but use `3DSController.py` instead of the EXE.
-
--For Joystick emulation, first, install [python-uinput](https://github.com/tuomasjjrasanen/python-uinput). BEWARE: The latest release of this library as of the writing of this tutorial is 0.10.2 which is broken for most updated systems. Download the master branch directly.
-
-Make sure that uinput module is running. You can do it from cosole like so: `#!sudo modprobe uinput`
-
-Then, follow the Windows instructions, but use `3DSController_gamepad.py` instead of the EXE.
-
-May work on OS X too, but this is not tested.
 
 ### Configuration
 Find the line `Port: 8889` and change it to your desired port, do this for both the 3DS's `3DSController.ini` and the PC's `3DSController.ini`.
 
 To use custom key bindings, just change the PC's `3DSController.ini` file, it should be straight forward.
-
-### Configuration (Linux)
-The configuration for the keyboard emulation is in `3DSController.py`, not the INI.
-
-The configuration for the joystick emulation is in `3DSController_gamepad.py`, not the INI.
 
 ### Troubleshooting
 - Make sure that you are using the 3DS and PC application from the same release,
