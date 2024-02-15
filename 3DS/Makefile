@@ -47,7 +47,7 @@ CFLAGS	:=	-g -Wall -O2 -mword-relocations \
 			-fms-extensions \
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS
+CFLAGS	+=	$(INCLUDE) -D__3DS__
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 
@@ -131,7 +131,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).3ds $(OUTPUT).cia $(OUTPUT).smdh $(TARGET).elf $(OUTPUT)stripped.elf
+	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(OUTPUT)stripped.elf
 
 
 #---------------------------------------------------------------------------------
@@ -144,7 +144,7 @@ DEPENDS	:=	$(OFILES:.o=.d)
 #---------------------------------------------------------------------------------
 ifeq ($(strip $(NO_SMDH)),)
 .PHONY: all
-all	:	$(OUTPUT).3dsx $(OUTPUT).3ds $(OUTPUT).cia $(OUTPUT).smdh
+all	:	$(OUTPUT).3dsx $(OUTPUT).smdh
 endif
 
 $(OUTPUT).3dsx	:	$(OUTPUT).elf

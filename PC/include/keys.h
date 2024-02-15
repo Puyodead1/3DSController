@@ -22,39 +22,62 @@
 #define newpress(key) ((currentKeys & key) && !(lastKeys & key))
 #define release(key) (!(currentKeys & key) && (lastKeys & key))
 
-#define handleKey(DSKey, PCKey) do {\
-	if(!PCKey.useJoypad) {\
-		if(newpress(DSKey)) simulateKeyNewpress(PCKey.virtualKey);\
-		if(release(DSKey)) simulateKeyRelease(PCKey.virtualKey);\
-	}\
-	else if(PCKey.useJoypad == 1) {\
-		if(currentKeys & DSKey) joyButtons |= PCKey.joypadButton;\
-		else joyButtons &= ~PCKey.joypadButton;\
-	}\
-	else if(PCKey.useJoypad == 2) {\
-		if(currentKeys & DSKey) joyButtons |= PCKey.joypadButton << 8;\
-		else joyButtons &= ~(PCKey.joypadButton << 8);\
-	}\
-} while(0)
+#define handleKey(DSKey, PCKey)                           \
+	do                                                    \
+	{                                                     \
+		if (!PCKey.useJoypad)                             \
+		{                                                 \
+			if (newpress(DSKey))                          \
+				simulateKeyNewpress(PCKey.virtualKey);    \
+			if (release(DSKey))                           \
+				simulateKeyRelease(PCKey.virtualKey);     \
+		}                                                 \
+		else if (PCKey.useJoypad == 1)                    \
+		{                                                 \
+			if (currentKeys & DSKey)                      \
+				joyButtons |= PCKey.joypadButton;         \
+			else                                          \
+				joyButtons &= ~PCKey.joypadButton;        \
+		}                                                 \
+		else if (PCKey.useJoypad == 2)                    \
+		{                                                 \
+			if (currentKeys & DSKey)                      \
+				joyButtons |= PCKey.joypadButton << 8;    \
+			else                                          \
+				joyButtons &= ~(PCKey.joypadButton << 8); \
+		}                                                 \
+	} while (0)
 
-#define TouchKey(Act,PCKey) do {\
-	if(!PCKey.useJoypad) {\
-		if(Act==1) simulateKeyNewpress(PCKey.virtualKey);\
-		if(Act==0) simulateKeyRelease(PCKey.virtualKey);\
-	}\
-	else if(PCKey.useJoypad == 1) {\
-		if(Act==1) joyButtons |= PCKey.joypadButton;\
-		else joyButtons &= ~PCKey.joypadButton;\
-	}\
-	else if(PCKey.useJoypad == 2) {\
-		if(Act==1) joyButtons |= PCKey.joypadButton << 8;\
-		else joyButtons &= ~(PCKey.joypadButton << 8);\
-	}\
-} while(0)
+#define TouchKey(Act, PCKey)                              \
+	do                                                    \
+	{                                                     \
+		if (!PCKey.useJoypad)                             \
+		{                                                 \
+			if (Act == 1)                                 \
+				simulateKeyNewpress(PCKey.virtualKey);    \
+			if (Act == 0)                                 \
+				simulateKeyRelease(PCKey.virtualKey);     \
+		}                                                 \
+		else if (PCKey.useJoypad == 1)                    \
+		{                                                 \
+			if (Act == 1)                                 \
+				joyButtons |= PCKey.joypadButton;         \
+			else                                          \
+				joyButtons &= ~PCKey.joypadButton;        \
+		}                                                 \
+		else if (PCKey.useJoypad == 2)                    \
+		{                                                 \
+			if (Act == 1)                                 \
+				joyButtons |= PCKey.joypadButton << 8;    \
+			else                                          \
+				joyButtons &= ~(PCKey.joypadButton << 8); \
+		}                                                 \
+	} while (0)
 
 #define BIT(n) (1 << (n))
 
-typedef enum {
+typedef enum
+{
 	KEY_A = BIT(0),
 	KEY_B = BIT(1),
 	KEY_SELECT = BIT(2),
@@ -67,18 +90,18 @@ typedef enum {
 	KEY_L = BIT(9),
 	KEY_X = BIT(10),
 	KEY_Y = BIT(11),
-	KEY_ZL = BIT(14), // (new 3DS only)
-	KEY_ZR = BIT(15), // (new 3DS only)
-	KEY_TOUCH = BIT(20), // Not actually provided by HID
+	KEY_ZL = BIT(14),			// (new 3DS only)
+	KEY_ZR = BIT(15),			// (new 3DS only)
+	KEY_TOUCH = BIT(20),		// Not actually provided by HID
 	KEY_CSTICK_RIGHT = BIT(24), // c-stick (new 3DS only)
-	KEY_CSTICK_LEFT = BIT(25), // c-stick (new 3DS only)
-	KEY_CSTICK_UP = BIT(26), // c-stick (new 3DS only)
-	KEY_CSTICK_DOWN = BIT(27), // c-stick (new 3DS only)
-	KEY_CPAD_RIGHT = BIT(28), // circle pad
-	KEY_CPAD_LEFT = BIT(29), // circle pad
-	KEY_CPAD_UP = BIT(30), // circle pad
-	KEY_CPAD_DOWN = BIT(31), // circle pad
-	
+	KEY_CSTICK_LEFT = BIT(25),	// c-stick (new 3DS only)
+	KEY_CSTICK_UP = BIT(26),	// c-stick (new 3DS only)
+	KEY_CSTICK_DOWN = BIT(27),	// c-stick (new 3DS only)
+	KEY_CPAD_RIGHT = BIT(28),	// circle pad
+	KEY_CPAD_LEFT = BIT(29),	// circle pad
+	KEY_CPAD_UP = BIT(30),		// circle pad
+	KEY_CPAD_DOWN = BIT(31),	// circle pad
+
 	// Generic catch-all directions
 	KEY_UP = KEY_DUP | KEY_CPAD_UP,
 	KEY_DOWN = KEY_DDOWN | KEY_CPAD_DOWN,
@@ -86,25 +109,30 @@ typedef enum {
 	KEY_RIGHT = KEY_DRIGHT | KEY_CPAD_RIGHT,
 } KEYPAD_BITS;
 
-struct keyMapping {
+struct keyMapping
+{
 	unsigned char useJoypad; // 0 keyboard key, 1 joypad1-8, 2 joypad9-16, 3 hat
-	union {
+	union
+	{
 		unsigned char virtualKey;
 		unsigned char joypadButton;
 	};
 };
 
-struct circlePad {
+struct circlePad
+{
 	short x;
 	short y;
 };
 
-struct cStick {
+struct cStick
+{
 	short x;
 	short y;
 };
 
-struct touch {
+struct touch
+{
 	short x;
 	short y;
 };

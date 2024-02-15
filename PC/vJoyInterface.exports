@@ -1,0 +1,89 @@
+Microsoft (R) COFF/PE Dumper Version 14.38.33135.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+Dump of file vJoyInterface.dll
+
+File Type: DLL
+
+  Section contains the following exports for vJoyInterface.dll
+
+    00000000 characteristics
+    FFFFFFFF time date stamp
+        0.00 version
+           1 ordinal base
+          57 number of functions
+          57 number of names
+
+    ordinal hint RVA      name
+
+          1    0 00001C67 AcquireVJD
+          2    1 00003206 DriverMatch
+          3    2 00002AE0 FfbGetEffect
+          4    3 000020AE FfbReadPID
+          5    4 00004DD1 FfbRegisterGenCB
+          6    5 00003CC9 FfbStart
+          7    6 0000394A FfbStop
+          8    7 0000476E FfbUpdateEffectState
+          9    8 00002CA2 FfbWritePID
+         10    9 00003D5F Ffb_h_CreateNewEffect
+         11    A 00001DED Ffb_h_DevCtrl
+         12    B 00004845 Ffb_h_DevGain
+         13    C 000023D3 Ffb_h_DeviceID
+         14    D 00004728 Ffb_h_EBI
+         15    E 000034C2 Ffb_h_EffNew
+         16    F 00004C69 Ffb_h_EffOp
+         17   10 000021B2 Ffb_h_Eff_Cond
+         18   11 00001307 Ffb_h_Eff_Constant
+         19   12 000047BE Ffb_h_Eff_Envlp
+         20   13 00003ABC Ffb_h_Eff_Period
+         21   14 00003387 Ffb_h_Eff_Ramp
+         22   15 00004034 Ffb_h_Eff_Report
+         23   16 00003D69 Ffb_h_EffectBlockIndex
+         24   17 00003D96 Ffb_h_Packet
+         25   18 0000248C Ffb_h_Type
+         26   19 000044F8 GetNumberExistingVJD
+         27   1A 0000131B GetOwnerPid
+         28   1B 00001B4A GetPosition
+         29   1C 000017BC GetVJDAxisExist
+         30   1D 00004499 GetVJDAxisMax
+         31   1E 000041F1 GetVJDAxisMin
+         32   1F 00001794 GetVJDButtonNumber
+         33   20 00003896 GetVJDContPovNumber
+         34   21 000035B2 GetVJDDiscPovNumber
+         35   22 00003486 GetVJDStatus
+         36   23 0000188E GetvJoyManufacturerString
+         37   24 000039E0 GetvJoyMaxDevices
+         38   25 00002AF4 GetvJoyProductString
+         39   26 00002AD1 GetvJoySerialNumberString
+         40   27 00004C46 GetvJoyVersion
+         41   28 00003643 IsDeviceFfb
+         42   29 000049EE IsDeviceFfbEffect
+         43   2A 00002D97 RegisterRemovalCB
+         44   2B 0000445D RelinquishVJD
+         45   2C 00003DEB ResetAll
+         46   2D 00004138 ResetButtons
+         47   2E 000028E2 ResetPovs
+         48   2F 00004B9C ResetVJD
+         49   30 00001AD7 SetAxis
+         50   31 00002266 SetBtn
+         51   32 00004750 SetContPov
+         52   33 00002E2D SetDiscPov
+         53   34 00001EBA UpdateVJD
+         54   35 00004AC0 isVJDExists
+         55   36 00004953 isVJDOpen
+         56   37 00003D14 vJoyEnabled
+         57   38 00003017 vJoyFfbCap
+
+  Summary
+
+        1000 .00cfg
+        4000 .data
+        2000 .idata
+        7000 .pdata
+       1D000 .rdata
+        2000 .reloc
+        1000 .rsrc
+       AE000 .text
+        1000 _RDATA
+        1000 memcpy_

@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef WINVER
-	#define WINVER 0x0500
+#define WINVER 0x0500
 #endif
 
 #include <windows.h>
@@ -13,7 +13,7 @@
 #define joyY iReport.wAxisY
 #define joyRX iReport.wAxisXRot
 #define joyRY iReport.wAxisYRot
-//#define joyVolume iReport.wSlider
+// #define joyVolume iReport.wSlider
 #define joyVolume iReport.wAxisZ
 #define povHat iReport.bHats
 
@@ -22,7 +22,7 @@
 #define JOY_MIDDLE (128 * 128)
 
 extern int ContPovNumber;
-//extern BOOL ContinuousPOV;
+// extern BOOL ContinuousPOV;
 
 extern JOYSTICK_POSITION iReport;
 

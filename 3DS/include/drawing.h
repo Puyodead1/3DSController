@@ -8,7 +8,7 @@
 #define REG_LCDBACKLIGHTSUB (u32)(0x1ED02A40 - 0x1EB00000)
 #endif
 
-inline void clearScreen(void);
+void clearScreen(void);
 
 #define drawPixelRGB(x, y, r, g, b) drawPixelRGBFramebuffer(0, x, y, r, g, b)
 void drawPixelRGBFramebuffer(u8 *fb, int x, int y, u8 r, u8 g, u8 b);
