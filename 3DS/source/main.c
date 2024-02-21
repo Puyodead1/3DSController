@@ -64,10 +64,10 @@ int main(void)
 		printf("Waiting for WiFi connection...");
 		printf("Ensure you are in range of an access point,");
 		printf("and that wireless communications are enabled.");
-		printf("You can alternatively press START to exit.");
+		printf("You can alternatively press START and SELECT to exit.");
 
 		u32 kDown = hidKeysDown();
-		if ((kDown & KEY_START))
+		if ((kDown & KEY_SELECT) && (kDown & KEY_START))
 		{
 			exitImmediately = 1;
 			longjmp(exitJmp, 1);
@@ -104,7 +104,7 @@ int main(void)
 
 	// disableBacklight();
 
-	printf("Press START to exit\n");
+	printf("Press START and SELECT to exit\n");
 
 	while (aptMainLoop())
 	{
@@ -180,8 +180,6 @@ int main(void)
 		// 	}
 		// }
 
-		sendKeys(kHeld, circlePad, touch, cStick, volume);
-
 		// printf("Volume: %x", volume);
 		// rec = receiveBuffer(sizeof(struct packet));
 		// if (rec)
@@ -189,12 +187,14 @@ int main(void)
 		// 	printf("Received %d bytes\n", rec);
 		// }
 
-		if (kHeld & KEY_START)
+		if ((kHeld & KEY_START) && (kHeld & KEY_SELECT))
 		{
-			sendKeys(0, circlePad, touch, cStick, volume);
+			// sendKeys(0, circlePad, touch, cStick, volume);
 			exitImmediately = 1;
-			break;
+			longjmp(exitJmp, 1);
 		}
+
+		sendKeys(kHeld, circlePad, touch, cStick, volume);
 
 		gfxFlushBuffers();
 		gspWaitForVBlank();
@@ -218,16 +218,16 @@ exit:
 
 	if (!exitImmediately)
 	{
-		// wait for user to press start
-		printf("\nPress START to exit\n");
+		// wait for user to press buttons, this allows the user to see the console output
+		printf("\nPress START and SELECT to exit\n");
 
 		while (aptMainLoop())
 		{
 			gspWaitForVBlank();
 			hidScanInput();
 
-			u32 kDown = hidKeysDown();
-			if (kDown & KEY_START)
+			u32 kHeld = hidKeysHeld();
+			if ((kHeld & KEY_START) && (kHeld & KEY_SELECT))
 				break;
 		}
 	}
