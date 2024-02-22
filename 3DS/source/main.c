@@ -189,7 +189,7 @@ int main(void)
 
 		if ((kHeld & KEY_START) && (kHeld & KEY_SELECT))
 		{
-			// sendKeys(0, circlePad, touch, cStick, volume);
+			sendKeys(0, circlePad, touch, cStick, volume);
 			exitImmediately = 1;
 			longjmp(exitJmp, 1);
 		}
