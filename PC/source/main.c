@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <math.h>
 
 #include "wireless.h"
 #include "keys.h"
@@ -269,14 +268,14 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmd, int nShow)
 			}
 			else if (settings.circlePad == joystick1)
 			{
-				joyX = (circlePad.x + 128) * 128;
-				joyY = (128 - circlePad.y) * 128;
+				joyX = clamp((circlePad.x + 128) * 128, 0, 32767);
+				joyY = clamp((128 - circlePad.y) * 128, 0, 32767);
 			}
 
 			else if (settings.circlePad == joystick2)
 			{
-				joyRX = (circlePad.x + 128) * 128;
-				joyRY = (128 - circlePad.y) * 128;
+				joyRX = clamp((circlePad.x + 128) * 128, 0, 32767);
+				joyRY = clamp((128 - circlePad.y) * 128, 0, 32767);
 			}
 
 			if (settings.cStick == mouse)
@@ -293,14 +292,14 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmd, int nShow)
 
 			else if (settings.cStick == joystick1)
 			{
-				joyX = (cStick.x + 128) * 128;
-				joyY = (128 - cStick.y) * 128;
+				joyX = clamp((cStick.x + 128) * 128, 0, 32767);
+				joyY = clamp((128 - cStick.y) * 128, 0, 32767);
 			}
 
 			else if (settings.cStick == joystick2)
 			{
-				joyRX = (cStick.x + 128) * 128;
-				joyRY = (128 - cStick.y) * 128;
+				joyRX = clamp((cStick.x + 128) * 128, 0, 32767);
+				joyRY = clamp((128 - cStick.y) * 128, 0, 32767);
 			}
 
 			if (settings.dPad == cPov)
@@ -371,23 +370,14 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmd, int nShow)
 					iReport.bHats = -1;
 			}
 
-			// clamp original range
-			if (volume < 0)
-				volume = 0;
-			if (volume > 70)
-				volume = 70;
+			double volMin = settings.deadzone;
+			double volMax = 70 - settings.deadzone;
 
-			volume = round(((double)(volume - 7) / (63 - 7)) * (70 - 0) + 0);
-
-			// clamp new range
-			if (volume < 0)
-				volume = 0;
-			if (volume > 70)
-				volume = 70;
-
+			volume = ((volume - volMin) / (volMax - volMin)) * (32767.0 - 0.0) + 0.0;
+			volume = clamp(volume, 0, 32767);
 			// printf("\rVolume is currently: %d ", volume); // test
 
-			joyVolume = volume * 512;
+			joyVolume = volume;
 
 			break;
 		}

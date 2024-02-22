@@ -12,6 +12,7 @@ struct settings settings;
 struct settings defaultSettings = {
 	port : 8889,
 	throttle : 20,
+	deadzone : 0,
 	circlePad : joystick1,
 	cStick : joystick2,
 	touch : mouse,
@@ -224,6 +225,11 @@ bool readSettings(void)
 	if (getSetting("Throttle: ", buffer, setting))
 	{
 		sscanf(setting, "%d", &settings.throttle);
+	}
+
+	if (getSetting("Volume Slider Deadzone: ", buffer, setting))
+	{
+		sscanf(setting, "%d", &settings.deadzone);
 	}
 
 	if (getSetting("Circle Pad: ", buffer, setting))

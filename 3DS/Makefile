@@ -31,10 +31,11 @@ BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data
 INCLUDES	:=	include
+DIST        :=  dist
 
 APP_TITLE		:=	3DS Controller
-APP_DESCRIPTION	:=
-APP_AUTHOR		:=	CTurt
+APP_DESCRIPTION	:=  A 3DS homebrew application to use your 3DS as a controller for your PC
+APP_AUTHOR		:=	CTurt, Puyodead1
 ICON			:=	cxi/icon48x48.png
 
 #---------------------------------------------------------------------------------
@@ -70,7 +71,7 @@ LIBDIRS	:= $(CTRULIB)
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------
 
-export OUTPUT	:=	$(CURDIR)/$(TARGET)
+export OUTPUT	:=	$(CURDIR)/$(DIST)/$(TARGET)
 export TOPDIR	:=	$(CURDIR)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
@@ -119,10 +120,13 @@ else
 	export APP_ICON := $(TOPDIR)/$(ICON)
 endif
 
-.PHONY: $(BUILD) clean all
+.PHONY: $(DIST) $(BUILD) clean all
 
 #---------------------------------------------------------------------------------
-all: $(BUILD)
+all: $(DIST) $(BUILD)
+
+$(DIST):
+	@[ -d $@ ] || mkdir -p $@
 
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
@@ -131,7 +135,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(OUTPUT)stripped.elf
+	@rm -fr $(BUILD) $(OUTPUT).3dsx $(OUTPUT).smdh $(OUTPUT).elf $(OUTPUT)stripped.elf
 
 
 #---------------------------------------------------------------------------------

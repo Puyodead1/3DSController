@@ -4,7 +4,8 @@
 
 #include "keys.h"
 
-enum analogue {
+enum analogue
+{
 	mouse,
 	joystick1,
 	joystick2,
@@ -12,15 +13,18 @@ enum analogue {
 	dualjoy,
 };
 
-enum dPad {
+enum dPad
+{
 	key,
 	pov,
 	cPov,
 };
 
-struct settings {
+struct settings
+{
 	int port;
 	int throttle;
+	int deadzone;
 	enum analogue circlePad;
 	enum analogue cStick;
 	enum analogue touch;
